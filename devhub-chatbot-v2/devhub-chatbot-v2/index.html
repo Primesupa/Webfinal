@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevHub - Your All-in-One Programming Resource Hub</title>
+    <meta name="description" content="Discover programming libraries, video tutorials, and resources for all programming languages">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- GIF Background Styles -->
+    <style>
+        /* ============================================================
+           GIF BACKGROUND — Blurred Fullscreen Layer
+        ============================================================ */
+
+        .gif-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+
+            /* 👇 CHANGE THIS URL TO YOUR OWN GIF */
+            background-image: url('https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExNnoyaW9nenFyOTRoMmJqaDcyYW1xdDB4NHRkY2RwZ3Z5bDYxcGE1bSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/QpVUMRUJGokfqXyfa1/giphy.gif');
+
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+
+            /* 🌫️ Blur + darken */
+            filter: blur(6px) brightness(0.35);
+            transform: scale(1.05);
+            transition: background-image 0.5s ease;
+        }
+
+        html,
+        body {
+            background: transparent !important;
+        }
+
+        body.dark-theme {
+            background-color: transparent !important;
+        }
+
+        .hero,
+        .filter-bar,
+        .section,
+        .newsletter-section {
+            background: transparent !important;
+        }
+
+        .hero-background {
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        .navbar,
+        .hero-container,
+        .container,
+        footer {
+            position: relative;
+            z-index: 1;
+        }
+
+        .language-card,
+        .library-card,
+        .video-card {
+            background: rgba(255, 255, 255, 0.05) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .navbar {
+            background: rgba(10, 10, 20, 0.55) !important;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .footer {
+            background: rgba(0, 0, 0, 0.6) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="dark-theme">
+
+    <!-- Video Modal (correctly placed inside body) -->
+    <div id="videoModal" class="video-modal">
+        <div class="video-modal-content">
+            <span class="video-modal-close" id="videoModalClose">&times;</span>
+            <iframe id="videoIframe" src="" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <style>
+    .video-modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.85);
+        justify-content: center;
+        align-items: center;
+    }
+    .video-modal.active {
+        display: flex;
+    }
+    .video-modal-content {
+        position: relative;
+        width: 80%;
+        max-width: 960px;
+        aspect-ratio: 16 / 9;
+    }
+    .video-modal iframe {
+        width: 100%;
+        height: 100%;
+        border-radius: 8px;
+    }
+    .video-modal-close {
+        position: absolute;
+        top: -36px;
+        right: 0;
+        font-size: 2rem;
+        color: #fff;
+        cursor: pointer;
+        line-height: 1;
+        transition: color 0.2s;
+    }
+    .video-modal-close:hover { color: #f55; }
+    </style>
+
+    <!-- 🎬 GIF Background Layer -->
+    <div class="gif-bg" id="gifBackground"></div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-code"></i>
+                <span class="brand-name">DevSpace</span>
+            </div>
+            
+            <div class="nav-links">
+                <a href="#home" class="nav-link active" data-i18n="nav_home">Home</a>
+                <a href="#languages" class="nav-link" data-i18n="nav_languages">Languages</a>
+                <a href="#libraries" class="nav-link" data-i18n="nav_libraries">Libraries</a>
+                <a href="#videos" class="nav-link" data-i18n="nav_videos">Videos</a>
+                <a href="#community" class="nav-link" data-i18n="nav_community">Community</a>
+            </div>
+            
+            <div class="nav-actions">
+                <button class="icon-btn search-btn" id="searchToggle">
+                    <i class="fas fa-search"></i>
+                </button>
+                
+                <div class="language-switcher">
+                    <button class="icon-btn" id="languageBtn">
+                        <i class="fas fa-globe"></i>
+                        <span id="currentLang">EN</span>
+                    </button>
+                    <div class="language-dropdown" id="languageDropdown">
+                        <button class="lang-option" data-lang="en">
+                            <span class="flag">🇬🇧</span> English
+                        </button>
+                        <button class="lang-option" data-lang="ar">
+                            <span class="flag">🇸🇦</span> العربية
+                        </button>
+                        <button class="lang-option" data-lang="es">
+                            <span class="flag">🇪🇸</span> Español
+                        </button>
+                        <button class="lang-option" data-lang="fr">
+                            <span class="flag">🇫🇷</span> Français
+                        </button>
+                        <button class="lang-option" data-lang="zh">
+                            <span class="flag">🇨🇳</span> 中文
+                        </button>
+                    </div>
+                </div>
+                
+                <button class="icon-btn theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+
+                <div class="user-widget" id="userWidget">
+                    <a class="btn-login" href="php/index.php">Login</a>
+                </div>
+                
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="#home" class="mobile-link" data-i18n="nav_home">Home</a>
+            <a href="#languages" class="mobile-link" data-i18n="nav_languages">Languages</a>
+            <a href="#libraries" class="mobile-link" data-i18n="nav_libraries">Libraries</a>
+            <a href="#videos" class="mobile-link" data-i18n="nav_videos">Videos</a>
+            <a href="#community" class="mobile-link" data-i18n="nav_community">Community</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-background">
+            <div class="gradient-orb orb-1"></div>
+            <div class="gradient-orb orb-2"></div>
+            <div class="gradient-orb orb-3"></div>
+        </div>
+        
+        <div class="container hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title" data-i18n="hero_title">
+                    Your All-in-One<br/>
+                    <span class="gradient-text">Programming Resource Hub</span>
+                </h1>
+                <p class="hero-subtitle" data-i18n="hero_subtitle">
+                    Discover libraries, frameworks, and video tutorials for all programming languages in one place
+                </p>
+                
+                <div class="hero-search">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input 
+                            type="text" 
+                            class="search-input" 
+                            id="heroSearch" 
+                            placeholder="Search libraries, videos, tutorials..."
+                            data-i18n-placeholder="hero_search_placeholder"
+                        >
+                        <button class="search-submit" type="button">
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                    <div class="search-history" id="searchHistory" aria-live="polite"></div>
+                </div>
+                
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label" data-i18n="hero_stat_languages">Languages</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">1000+</div>
+                        <div class="stat-label" data-i18n="hero_stat_libraries">Libraries</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">5000+</div>
+                        <div class="stat-label" data-i18n="hero_stat_videos">Video Tutorials</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filter Bar -->
+    <section class="filter-bar" id="filterBar">
+        <div class="container filter-container">
+            <div class="filter-group">
+                <label data-i18n="filter_language">Language:</label>
+                <select id="filterLanguage" class="filter-select">
+                    <option value="all" data-i18n="filter_all">All Languages</option>
+                    <option value="python">Python</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="java">Java</option>
+                    <option value="cpp">C++</option>
+                    <option value="csharp">C#</option>
+                    <option value="php">PHP</option>
+                    <option value="go">Go</option>
+                    <option value="rust">Rust</option>
+                    <option value="ruby">Ruby</option>
+                    <option value="swift">Swift</option>
+                    <option value="kotlin">Kotlin</option>
+                    <option value="typescript">TypeScript</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label data-i18n="filter_type">Type:</label>
+                <select id="filterType" class="filter-select">
+                    <option value="all" data-i18n="filter_all">All</option>
+                    <option value="library" data-i18n="filter_libraries">Libraries</option>
+                    <option value="video" data-i18n="filter_videos">Videos</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label data-i18n="filter_difficulty">Difficulty:</label>
+                <select id="filterDifficulty" class="filter-select">
+                    <option value="all" data-i18n="filter_all">All Levels</option>
+                    <option value="beginner" data-i18n="filter_beginner">Beginner</option>
+                    <option value="intermediate" data-i18n="filter_intermediate">Intermediate</option>
+                    <option value="advanced" data-i18n="filter_advanced">Advanced</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label data-i18n="filter_sort">Sort By:</label>
+                <select id="filterSort" class="filter-select">
+                    <option value="popular" data-i18n="filter_popular">Most Popular</option>
+                    <option value="newest" data-i18n="filter_newest">Newest</option>
+                    <option value="rating" data-i18n="filter_rating">Highest Rated</option>
+                </select>
+            </div>
+            
+            <button class="btn-reset" id="resetFilters" data-i18n="filter_reset">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+        </div>
+    </section>
+
+    <!-- Programming Languages Section -->
+    <section class="section languages-section" id="languages">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title" data-i18n="languages_title">Popular Programming Languages</h2>
+                <p class="section-subtitle" data-i18n="languages_subtitle">Choose your language and explore resources</p>
+            </div>
+            
+            <div class="languages-grid" id="languagesGrid">
+                <!-- Languages will be dynamically inserted here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Libraries Section -->
+    <section class="section libraries-section" id="libraries">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title" data-i18n="libraries_title">Popular Libraries & Frameworks</h2>
+                <p class="section-subtitle" data-i18n="libraries_subtitle">Discover the most popular tools for your projects</p>
+            </div>
+            
+            <div class="libraries-grid" id="librariesGrid">
+                <!-- Libraries will be dynamically inserted here -->
+            </div>
+            
+            <div class="load-more-container">
+                <button class="btn-load-more" id="loadMoreLibraries" data-i18n="load_more">
+                    Load More <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Videos Section -->
+    <section class="section videos-section" id="videos">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title" data-i18n="videos_title">Video Tutorials</h2>
+                <p class="section-subtitle" data-i18n="videos_subtitle">Learn from comprehensive video courses and tutorials</p>
+            </div>
+            
+            <div class="videos-grid" id="videosGrid">
+                <!-- Videos will be dynamically inserted here -->
+            </div>
+            <div id="videoPlayer" style="display:none; margin-top:30px; text-align:center;">
+                <iframe 
+                    id="youtubeFrame"
+                    width="900"
+                    height="500"
+                    src="https://www.youtube.com/embed/xpVfcZ0ZcFM?list=RDxpVfcZ0ZcFM&start_radio=1"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+            </iframe>
+            </div>
+            <div class="load-more-container">
+                <button class="btn-load-more" id="loadMoreVideos" data-i18n="load_more">
+                    Load More <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community Section -->
+    <section class="section community-section" id="community">
+        <div class="container">
+            <div class="community-content">
+                <div class="community-text">
+                    <h2 class="section-title" data-i18n="community_title">Join Our Developer Community</h2>
+                    <p class="section-subtitle" data-i18n="community_subtitle">
+                        Connect with thousands of developers, share knowledge, and grow together
+                    </p>
+                    <div class="community-features">
+                        <div class="feature-item">
+                            <i class="fas fa-comments"></i>
+                            <span data-i18n="community_feature_1">Discussion Forums</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-code"></i>
+                            <span data-i18n="community_feature_2">Code Challenges</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-users"></i>
+                            <span data-i18n="community_feature_3">Mentorship Program</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-trophy"></i>
+                            <span data-i18n="community_feature_4">Achievements & Badges</span>
+                        </div>
+                    </div>
+                    <button class="btn-primary" data-i18n="community_join">
+                        <i class="fas fa-user-plus"></i> Join Community
+                    </button>
+                </div>
+                <div class="community-image">
+                    <div class="community-card">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter-section">
+        <div class="container">
+            <div class="newsletter-content">
+                <h3 data-i18n="newsletter_title">Stay Updated</h3>
+                <p data-i18n="newsletter_subtitle">Get the latest programming resources and tutorials delivered to your inbox</p>
+                <div class="newsletter-form">
+                    <input 
+                        type="email" 
+                        class="newsletter-input" 
+                        placeholder="Enter your email"
+                        data-i18n-placeholder="newsletter_placeholder"
+                    >
+                    <button class="btn-newsletter" data-i18n="newsletter_subscribe">
+                        Subscribe
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-brand">
+                        <i class="fas fa-code"></i>
+                        <span>DevHub</span>
+                    </div>
+                    <p class="footer-description" data-i18n="footer_description">
+                        Your comprehensive resource hub for programming languages, libraries, and video tutorials.
+                    </p>
+                    <div class="social-links">
+                        <a href="https://github.com/yourusername" class="social-link" target="_blank">
+                            <i class="fab fa-reddit"></i>
+                        </a>
+                        <a href="https://twitter.com/yourusername" class="social-link" target="_blank">
+                            <i class="fab fa-x"></i>
+                        </a>
+                        <a href="https://discord.gg/PkqwTtt9" class="social-link" target="_blank">
+                            <i class="fab fa-discord"></i>
+                        </a>
+                        <a href="https://www.youtube.com/@osh3lek" class="social-link" target="_blank">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-title" data-i18n="footer_resources">Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="#languages" data-i18n="nav_languages">Languages</a></li>
+                        <li><a href="#libraries" data-i18n="nav_libraries">Libraries</a></li>
+                        <li><a href="#videos" data-i18n="nav_videos">Videos</a></li>
+                        <li><a href="#" data-i18n="footer_documentation">Documentation</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-title" data-i18n="footer_support">Support</h4>
+                    <ul class="footer-links">
+                        <li><a href="#" data-i18n="footer_help">Help Center</a></li>
+                        <li><a href="#community" data-i18n="nav_community">Community</a></li>
+                        <li><a href="#" data-i18n="footer_contact">Contact Us</a></li>
+                        <li><a href="#" data-i18n="footer_faq">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-title" data-i18n="footer_legal">Legal</h4>
+                    <ul class="footer-links">
+                        <li><a href="#" data-i18n="footer_privacy">Privacy Policy</a></li>
+                        <li><a href="#" data-i18n="footer_terms">Terms of Service</a></li>
+                        <li><a href="#" data-i18n="footer_cookies">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 DevHub. <span data-i18n="footer_rights">All rights reserved.</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top" id="scrollTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+
+    <!-- Chatbot Widget V2 -->
+    <div class="chatbot-widget" id="chatbotWidget">
+        <button class="chatbot-toggle" id="chatbotToggle" aria-label="Open chatbot">
+            <i class="fas fa-robot"></i>
+        </button>
+
+        <div class="chatbot-panel" id="chatbotPanel" aria-hidden="true">
+            <div class="chatbot-header">
+                <div class="chatbot-title-wrap">
+                    <div class="chatbot-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="chatbot-title-text">
+                        <h3>DevHub Assistant</h3>
+                        <p>Offline coding helper</p>
+                    </div>
+                </div>
+
+                <button class="chatbot-close" id="chatbotClose" aria-label="Close chatbot">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="chatbot-messages" id="chatbotMessages"></div>
+
+            <div class="chatbot-quick-replies" id="chatbotQuickReplies">
+                <button type="button" class="quick-reply-btn">What is HTML?</button>
+                <button type="button" class="quick-reply-btn">What is CSS?</button>
+                <button type="button" class="quick-reply-btn">What is JavaScript?</button>
+                <button type="button" class="quick-reply-btn">Explain flexbox</button>
+                <button type="button" class="quick-reply-btn">Explain functions</button>
+                <button type="button" class="quick-reply-btn">How do I start coding?</button>
+            </div>
+
+            <div class="chatbot-typing" id="chatbotTyping">
+                <span></span>
+                <span></span>
+                <span></span>
+                <small>AI is typing...</small>
+            </div>
+
+            <form class="chatbot-input-area" id="chatbotForm">
+                <input
+                    type="text"
+                    id="chatbotInput"
+                    placeholder="Ask about HTML, CSS, JavaScript..."
+                    autocomplete="off"
+                />
+                <button type="submit" aria-label="Send message">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Custom JavaScript -->
+    <script src="js/data.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/main.js"></script>
+
+    <!-- Video Modal Controller -->
+    <script>
+        // Opens the modal with a YouTube video ID
+        // Call this from main.js: openVideoModal('VIDEO_ID')
+        function openVideoModal(videoId) {
+            const modal  = document.getElementById('videoModal');
+            const iframe = document.getElementById('videoIframe');
+            if (!modal || !iframe) return;
+            iframe.src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1';
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeVideoModal() {
+            const modal  = document.getElementById('videoModal');
+            const iframe = document.getElementById('videoIframe');
+            if (!modal || !iframe) return;
+            modal.classList.remove('active');
+            iframe.src = '';                   // stop playback
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Close button
+            const closeBtn = document.getElementById('videoModalClose');
+            if (closeBtn) closeBtn.addEventListener('click', closeVideoModal);
+
+            // Click on dark overlay to close
+            const modal = document.getElementById('videoModal');
+            if (modal) {
+                modal.addEventListener('click', function (e) {
+                    if (e.target === modal) closeVideoModal();
+                });
+            }
+
+            // ESC key closes modal
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeVideoModal();
+            });
+
+            // Auto-wire any element with data-video-id attribute
+            // e.g. <button data-video-id="dQw4w9WgXcQ">Watch</button>
+            document.querySelectorAll('[data-video-id]').forEach(function (el) {
+                el.style.cursor = 'pointer';
+                el.addEventListener('click', function () {
+                    openVideoModal(el.getAttribute('data-video-id'));
+                });
+            });
+        });
+    </script>
+
+    <!-- 🎬 GIF Background Controller -->
+    <script>
+        // ✏️ CHANGE THIS URL TO YOUR OWN GIF LINK
+        const DEFAULT_GIF = 'https://media.giphy.com/media/xT9IgzoKnwFNmISR8I/giphy.gif';
+
+        function changeGif(url) {
+            const bg = document.getElementById('gifBackground');
+            if (bg) {
+                bg.style.backgroundImage = `url('${url}')`;
+            }
+        }
+
+        // Apply the default GIF on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            changeGif(DEFAULT_GIF);
+        });
+    </script>
+
+</body>
+</html>
